@@ -1,0 +1,12 @@
+version: 2
+
+sources:
+  - name: silverscreen #name of the source you will reference in the models
+    database: silverscreen #name of database
+    schema: public
+    tables:
+      - name: movie_catalogue
+      - name: ticketsales_nj_001
+      - name: ticketsales_nj_002
+      - name: ticketsales_nj_003
+      - name: invoices
