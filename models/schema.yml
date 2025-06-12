@@ -49,7 +49,7 @@ sources:
             tests:
               - not_null
       - name: ticketsales_nj_003
-        description: "Raw NJ_003 transaction data with ticketssales, in amount, price and totals"
+        description: "Raw NJ_003 transaction data with ticketssales and other productsales, in amount, price and totals"
         columns:
           - name: DETAILS
       - name: invoices
@@ -81,7 +81,7 @@ models:
           - not_null
           
   - name: stg_ticketsales_nj_002_cleaned
-    description: this model filters out users who haven't completed registration
+    description: this creates a cleaned table of monthly aggregated ticketsales in location 002 used for the main mart
     columns:
       - name: MONTH
         tests:
@@ -94,7 +94,7 @@ models:
           - not_null
       
   - name: stg_movie_catalogue_cleaned
-    description: this creates a cleaned table of monthly aggregated ticketsales in location 002 used for the main mart
+    description: this creates a cleaned table of the movie details
     columns:
       - name: RELEASE_DATE
         tests:
@@ -107,7 +107,7 @@ models:
         tests:
           - not_null
   - name: int_ticketsales_nj_all
-    description: this creates a cleaned table of monthly aggregated ticketsales for all locations used for the main marts
+    description: this creates a combined table of monthly  ticketsales for all locations
     columns:
       - name: MONTH
         tests:
