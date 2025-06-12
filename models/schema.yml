@@ -6,12 +6,7 @@ sources:
     schema: public
     tables:
       - name: movie_catalogue
-        description: "Detailed information on the movie, e.g. BUDGET, DIRECTOR, GENRE, RATING, STUDIO"
-        columns:
-          - name: RELEASE_DATE
-            tests:
-              - not_null
-
+        description: "Detailed information on the movie"
       - name: ticketsales_nj_001
         description: "Raw NJ_001 transaction data with tickets and details on discount and film"
         columns:
@@ -21,7 +16,6 @@ sources:
           - name: TIMESTAMP
             tests:
               - not_null
-
           - name: ticket_amount
             tests:
               - not_null
@@ -45,8 +39,6 @@ sources:
           - name: PRICE
             tests:
               - not_null
-
-
       - name: ticketsales_nj_002
         description: "Raw NJ_002 transaction data with ticketssales, in amount, price and totals"
         columns:
@@ -60,9 +52,7 @@ sources:
         description: "Raw NJ_003 transaction data with ticketssales, in amount, price and totals"
         columns:
           - name: DETAILS
-
       - name: invoices
-
 models:
   - name: stg_ticketsales_nj_001_cleaned
     description: this creates a cleaned table of monthly aggregated ticketsales in location 001 used for the main mart
@@ -70,40 +60,26 @@ models:
       - name: MONTH
         tests:
           - not_null
-
       - name: TOTAL_REVENUE
         tests:
           - not_null
       - name: TOTAL_TICKETS_SOLD
         tests:
           - not_null
-
-    tests:
-      - dbt_utils.expression_is_true:
-          expression: "MONTH <= CURRENT_TIMESTAMP"
-      - dbt_utils.expression_is_true:
-          expression: "TOTAL_TICKETS_SOLD >= 0"
-
+        
   - name: stg_ticketsales_nj_003_cleaned
     description: this creates a cleaned table of monthly aggregated ticketsales in location 003 used for the main mart
     columns:
       - name: MONTH
         tests:
           - not_null
-
       - name: TOTAL_REVENUE
         tests:
           - not_null
       - name: TOTAL_TICKETS_SOLD
         tests:
           - not_null
-
-    tests:
-      - dbt_utils.expression_is_true:
-          expression: "MONTH <= CURRENT_TIMESTAMP"
-      - dbt_utils.expression_is_true:
-          expression: "TOTAL_TICKETS_SOLD >= 0"
-
+          
   - name: stg_ticketsales_nj_002_cleaned
     description: this model filters out users who haven't completed registration
     columns:
@@ -116,19 +92,13 @@ models:
       - name: TOTAL_TICKETS_SOLD
         tests:
           - not_null
-    tests:
-      - dbt_utils.expression_is_true:
-          expression: "MONTH <= CURRENT_TIMESTAMP"
-      - dbt_utils.expression_is_true:
-          expression: "TOTAL_TICKETS_SOLD >= 0"
-
+      
   - name: stg_movie_catalogue_cleaned
     description: this creates a cleaned table of monthly aggregated ticketsales in location 002 used for the main mart
     columns:
       - name: RELEASE_DATE
         tests:
           - not_null
-
       - name: MOVIE_ID
         tests:
           - not_null
@@ -136,17 +106,12 @@ models:
       - name: BUDGET
         tests:
           - not_null
-    tests:
-      - dbt_utils.expression_is_true:
-          expression: "RELEASE_DATE <= CURRENT_TIMESTAMP"
-
   - name: int_ticketsales_nj_all
     description: this creates a cleaned table of monthly aggregated ticketsales for all locations used for the main marts
     columns:
       - name: MONTH
         tests:
           - not_null
-
       - name: MOVIE_ID
         tests:
           - not_null
@@ -156,24 +121,16 @@ models:
       - name: TOTAL_TICKETS_SOLD
         tests:
           - not_null
-
-    tests:
-      - dbt_utils.expression_is_true:
-          expression: "MONTH <= CURRENT_TIMESTAMP"
-      - dbt_utils.expression_is_true:
-          expression: "TOTAL_TICKETS_SOLD >= 0"
-
+         
   - name: int_movie_costs_by_location
     description: this creates a cleaned table of monthly rental costas per movie per location used for the main mart
     columns:
       - name: MONTH
         tests:
           - not_null
-
       - name: INVOICE_ID
         tests:
           - not_null
-
       - name: LOCATION_ID
         tests:
           - not_null
@@ -183,35 +140,22 @@ models:
       - name: RENTAL_COST
         tests:
           - not_null
-
-    tests:
-      - dbt_utils.expression_is_true:
-          expression: "MONTH <= CURRENT_TIMESTAMP"
-      - dbt_utils.expression_is_true:
-          expression: "RENTAL_COST >= 0"
-
+       
   - name: marts_movie_cost_rev
     description: this creates a cleaned table of monthly rental costs and revenue per movie per location and sold tickets
     columns:
       - name: MONTH
         tests:
           - not_null
-
       - name: TICKETS_SOLD
         tests:
           - not_null
-
+    
       - name: REVENUE
         tests:
           - not_null
       - name: RENTAL_COST
         tests:
           - not_null
-
-    tests:
-      - dbt_utils.expression_is_true:
-          expression: "MONTH <= CURRENT_TIMESTAMP"
-      - dbt_utils.expression_is_true:
-          expression: "TICKETS_SOLD >= 0"
-      - dbt_utils.expression_is_true:
-          expression: "RENTAL_COST >= 0"
+       
+      

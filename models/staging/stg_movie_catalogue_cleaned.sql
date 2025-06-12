@@ -12,4 +12,4 @@ select
     coalesce(rating, 'Unknown') as rating,
     COALESCE(minutes, 0) as minutes	
 
-from {{ source("silverscreen", "movie_catalogue") }}
+from {{ source("silverscreen","movie_catalogue") }}
