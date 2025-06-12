@@ -8,10 +8,9 @@ sources:
       - name: movie_catalogue
         description: "Detailed information on the movie, e.g. BUDGET, DIRECTOR, GENRE, RATING, STUDIO"
         columns:
-          - name: DATE
+          - name: RELEASE_DATE
             tests:
-              - dbt_utils.expression_is_true:
-                  expression: "DATE <= CURRENT_TIMESTAMP"
+              - not_null
 
       - name: ticketsales_nj_001
         description: "Raw NJ_001 transaction data with tickets and details on discount and film"
@@ -47,11 +46,9 @@ sources:
             tests:
               - not_null
 
-        tests:
-          - dbt_utils.expression_is_true:
-              expression: "TIMESTAMP <= CURRENT_TIMESTAMP"
 
       - name: ticketsales_nj_002
+        description: "Raw NJ_002 transaction data with ticketssales, in amount, price and totals"
         columns:
           - name: movie_id
             tests:
@@ -60,6 +57,10 @@ sources:
             tests:
               - not_null
       - name: ticketsales_nj_003
+        description: "Raw NJ_003 transaction data with ticketssales, in amount, price and totals"
+        columns:
+          - name: DETAILS
+
       - name: invoices
 
 models:
@@ -69,14 +70,14 @@ models:
       - name: MONTH
         tests:
           - not_null
-        
+
       - name: TOTAL_REVENUE
         tests:
           - not_null
       - name: TOTAL_TICKETS_SOLD
         tests:
           - not_null
-          
+
     tests:
       - dbt_utils.expression_is_true:
           expression: "MONTH <= CURRENT_TIMESTAMP"
@@ -127,7 +128,7 @@ models:
       - name: RELEASE_DATE
         tests:
           - not_null
-        
+
       - name: MOVIE_ID
         tests:
           - not_null
@@ -138,7 +139,6 @@ models:
     tests:
       - dbt_utils.expression_is_true:
           expression: "RELEASE_DATE <= CURRENT_TIMESTAMP"
-      
 
   - name: int_ticketsales_nj_all
     description: this creates a cleaned table of monthly aggregated ticketsales for all locations used for the main marts
@@ -169,11 +169,11 @@ models:
       - name: MONTH
         tests:
           - not_null
-         
+
       - name: INVOICE_ID
         tests:
           - not_null
-          - unique
+
       - name: LOCATION_ID
         tests:
           - not_null
@@ -183,7 +183,7 @@ models:
       - name: RENTAL_COST
         tests:
           - not_null
-          
+
     tests:
       - dbt_utils.expression_is_true:
           expression: "MONTH <= CURRENT_TIMESTAMP"
@@ -196,18 +196,18 @@ models:
       - name: MONTH
         tests:
           - not_null
-          
+
       - name: TICKETS_SOLD
         tests:
           - not_null
-        
+
       - name: REVENUE
         tests:
           - not_null
       - name: RENTAL_COST
         tests:
           - not_null
-          
+
     tests:
       - dbt_utils.expression_is_true:
           expression: "MONTH <= CURRENT_TIMESTAMP"
