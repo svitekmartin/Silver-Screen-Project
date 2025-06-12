@@ -37,4 +37,10 @@ clean-targets:         # directories to be removed by `dbt clean`
 
 models:
   silverscreen:
-   
+    # Applies to all files under models
+    staging:
+      +materialized: table
+    intermediate:
+      +materialized: view
+    marts:
+      +materialized: table
