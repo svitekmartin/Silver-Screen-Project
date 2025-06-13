@@ -42,5 +42,11 @@ with
         from total_sales_nj003
     )
 
-select *
+select 
+    month,
+    location_id,
+    movie_id,
+    sum(total_tickets_sold) as total_tickets_sold,
+    sum(total_revenue) as total_revenue
 from combined_sales
+group by 1, 2, 3
