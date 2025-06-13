@@ -1,15 +1,64 @@
-Welcome to your new dbt project!
+# Silver Screen Cinema Efficiency Analysis (dbt Project)
 
-### Using the starter project
+This project is an ELT pipeline built on dbt to analyze data from the 'Silver Screen' cinema chain. The project's goal is to clean and unify data from various sources and create a single analytical data mart to assess the profitability of movies across different locations.
 
-Try running the following commands:
-- dbt run
-- dbt test
+## Tech Stack
+* **dbt Core**: For data transformation.
+* **Snowflake**: As the data warehouse.
+* **Git & GitHub**: For version control.
 
+## Data Sources
+This project is based on 5 raw data files (CSVs) provided by 'Silver Screen'. The source files are located in the `/seeds` directory of this repository and are loaded into the data warehouse using the `dbt seed` command.
 
-### Resources:
-- Learn more about dbt [in the docs](https://docs.getdbt.com/docs/introduction)
-- Check out [Discourse](https://discourse.getdbt.com/) for commonly asked questions and answers
-- Join the [dbt community](https://getdbt.com/community) to learn from other analytics engineers
-- Find [dbt events](https://events.getdbt.com) near you
-- Check out [the blog](https://blog.getdbt.com/) for the latest news on dbt's development and best practices
+| Source Name       | Description                                                                 |
+|-------------------|-----------------------------------------------------------------------------|
+| `movie_catalogue` | Contains detailed information about movies released in 2024.                  |
+| `invoices`        | Invoices issued for showing specific movies at various theater locations.     |
+| `nj_001`          | Detailed transactional data for all ticket sales from location NJ_001.        |
+| `nj_002`          | Daily aggregated sales information from location NJ_002.                      |
+| `nj_003`          | Transactional data for all product types (tickets, snacks, etc.) from location NJ_003. |
+
+## Project Structure
+This project uses a layered architecture to organize models, which is a dbt best practice:
+
+* `models/staging`: Models for basic cleaning and standardization of raw data from the 5 sources. Each model in this layer corresponds to one source.
+* `models/intermediate`: Intermediate models for unifying data from different sources. This is where the main sales aggregation logic resides.
+* `models/marts`: The final data marts, ready for analysis and connection to BI tools. The key model is `mart_movie_final`.
+* `tests/`: Custom (singular) tests to check for complex business rules not covered by standard generic tests.
+
+## How to Run the Project
+
+1.  **Load Seed Data:**
+    This command loads the raw data from the CSV files located in the `/seeds` directory into your data warehouse.
+    ```bash
+    dbt seed
+    ```
+
+2.  **Build Models and Run Tests:**
+    To sequentially build all models and run all tests, use the command:
+    ```bash
+    dbt build
+    ```
+    Alternatively, you can run the commands separately:
+    ```bash
+    dbt run   # To build all models (tables/views)
+    dbt test  # To run all data quality tests
+    ```
+
+3.  **Generate and View Documentation:**
+    To generate the documentation site and view the dependency graph (DAG):
+    ```bash
+    dbt docs generate
+    dbt docs serve
+    ```
+
+## Data Models Overview
+The data pipeline executes the following steps:
+1.  **Source Cleaning:** Data from `NJ_001`, `NJ_002`, `NJ_003`, `INVOICES`, and `MOVIE_CATALOGUE` is processed through `staging` models.
+2.  **Sales Unification:** Cleansed sales data is unified and aggregated by month in the `int_sales_by_month` model.
+3.  **Mart Creation:** The final model, `mart_movie_final`, `JOIN`s aggregated sales, costs, and movie details, creating a single table for analysis.
+
+### Key Features & Fixes
+During development, the following data quality tasks were resolved:
+* **Unreliable Invoice Data:** The `invoice_id` was found to be non-unique. The logic was changed to aggregate costs by a true business key (`month`, `location`, `movie`) to ensure correct cost calculation.
+* **Custom Testing:** A custom SQL test was developed to verify the uniqueness of the column combination in the intermediate model, guaranteeing the correctness of the aggregation logic.
