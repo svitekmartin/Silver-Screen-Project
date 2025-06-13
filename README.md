@@ -2,7 +2,7 @@
 
 This dbt project implements an ELT pipeline designed to analyze operational and financial data for the Silver Screen cinema chain. The primary objective is to standardize and integrate data from multiple sources, transforming it into a consolidated analytical data mart. This enables a clear assessment of movie profitability across various cinema locations.
 
-## Tech Stack
+## Technology Stack
 * **dbt Core**: For data transformation.
 * **Snowflake**: As the data warehouse.
 * **GitHub**: For version control.
@@ -57,13 +57,14 @@ This project follows a layered model architecture—aligned with dbt best practi
 ## Data Models Overview
 The data pipeline follows these steps:
 
-1.  **Source Cleaning:** Raw data from NJ_001, NJ_002, NJ_003, INVOICES, and MOVIE_CATALOGUE is cleansed and standardized using the staging models.
-2.  **Sales Unification:** Sales data, once cleansed, is consolidated and aggregated on a monthly basis within the int_sales_by_month model.
+1.  **Source Cleaning:** Raw data from TICKETSALES_NJ_001, TICKETSALES_NJ_002, TICKETSALES_NJ_003, INVOICES, and MOVIE_CATALOGUE is cleaed and standardized using the staging models.
+2.  **Consolidated Sales Data:** Sales data, once cleansed, is consolidated and aggregated on a monthly basis within the int_sales_by_month model.
 3.  **Mart Creation:** The final model, `mart_movie_final`, combines aggregated sales, costs, and movie details through `JOIN`s to produce a unified table ready for analysis.
 
 
-### Key Features & Fixes
-During development, the following data quality tasks were resolved:
-* **Unreliable Invoice Data:** The `invoice_id` was identified as non-unique, so the logic was updated to aggregate costs using a true business key—`month`, `location`, and `movie`—to ensure accurate cost calculations.
+### Core Features & Improvements
+During development, the following data quality issues were addressed:
 
-* **Custom Testing:** A custom SQL test was developed to verify the uniqueness of the column combination in the intermediate model, guaranteeing the correctness of the aggregation logic.
+* **Invoice Data Reliability Issues:** The `invoice_id` was identified as non-unique, so the logic was updated to aggregate costs using a true business key—`month`, `location`, and `movie`—to ensure accurate cost calculations.
+
+* **Custom Testing:** I created a custom SQL test to ensure that the combination of columns in the int_model is unique, thereby validating the accuracy of the aggregation logic.
