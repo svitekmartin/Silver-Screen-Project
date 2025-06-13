@@ -6,9 +6,31 @@ sources:
     schema: public
     tables:
       - name: movie_catalogue
-        description: "Detailed information on the movie"
+        description: "movie catalogue with detailed information."
+        columns:
+          - name: movie_id
+            description: "unique identifier for the movie."
+            tests:
+              - unique
+              - not_null
+          - name: movie_title
+            description: "title of the movie."
+          - name: release_date
+            description: "release date."
+          - name: genre
+            description: "genre of the movie."
+          - name: studio
+            description: "production studio."
+          - name: budget
+            description: "movie's budget for production."
+          - name: director
+            description: "director of the movie."
+          - name: rating
+            description: "suitable age rating."
+          - name: minutes
+            description: "lenght of the movie in minutes."
       - name: ticketsales_nj_001
-        description: "Raw NJ_001 transaction data with tickets and details on discount and film"
+        description: "Raw NJ_001 transaction data with tickets and details on discount and movie"
         columns:
           - name: movie_id
             tests:
@@ -33,6 +55,7 @@ sources:
               - accepted_values:
                   values: [true, false]
           - name: TRANSACTION_ID
+            description: "unique identifier for the transaction."
             tests:
               - not_null
               - unique
@@ -42,20 +65,62 @@ sources:
       - name: ticketsales_nj_002
         description: "Raw NJ_002 transaction data with ticketssales, in amount, price and totals"
         columns:
-          - name: movie_id
-            tests:
-              - not_null
           - name: date
+            description: "date for which sales are aggregated."
             tests:
               - not_null
+          - name: movie_id
+            description: "identifier for the movie."
+            tests:
+              - not_null
+          - name: ticket_amount
+            description: "total number of tickets sold per day."
+          - name: ticket_price
+            description: "ticket price."
+          - name: total_earned
+            description: "total revenue earned by  day."
       - name: ticketsales_nj_003
         description: "Raw NJ_003 transaction data with ticketssales and other productsales, in amount, price and totals"
         columns:
-          - name: DETAILS
+          - name: transaction_id
+            description: "unique identifier for the transaction."
+            tests:
+              - unique
+              - not_null
+          - name: product_type
+            description: "The type of product (e.g. snack, drink, ticket )."
+            tests:
+              - not_null
+          - name: details
+            description: "product details. For tickets: contains the movie_id."
+          - name: amount
+            description: "quantity of the product unit."
+          - name: price
+            description: "price per unit."
+          - name: total_value
+            description: "total value of transaction."
       - name: invoices
+        description: "invoices for movie rentals by locations."
+        columns:
+          - name: MOVIE_ID
+            description: "unique identifier for the movie."
+          - name: INVOICE_ID
+            description: "original invoice identifier. Not unique key!."
+          - name: MONTH
+            description: "month during which the invoice was issued."
+          - name: LOCATION_ID
+            description: "Identifier for the theater location."
+          - name: STUDIO
+            description: "studio responsible for producing the movie."
+          - name: Release_Date
+            description: "release date of the movie."
+          - name: Weekly_price
+            description: "weekly rental cost for the movie."
+          - name: Total_invoice_sum
+            description: "total sum of the invoice."
 models:
   - name: stg_ticketsales_nj_001_cleaned
-    description: this creates a cleaned table of monthly aggregated ticketsales in location 001 used for the main mart
+    description: creates a cleaned table of monthly aggregated ticketsales in location 001 used for the main mart
     columns:
       - name: MONTH
         tests:
@@ -67,14 +132,14 @@ models:
         tests:
           - not_null
       - name: location_id
-        description: "The identifier for the location, set to 'NJ_001'."
+        description: "identifier for the location, set to 'NJ_001'."
         tests:
           - not_null
           - accepted_values:
               values: ['NJ_001']
         
   - name: stg_ticketsales_nj_003_cleaned
-    description: this creates a cleaned table of monthly aggregated ticketsales in location 003 used for the main mart
+    description: creates a cleaned table of monthly aggregated ticketsales in location 003 used for the main mart
     columns:
       - name: MONTH
         tests:
@@ -86,14 +151,13 @@ models:
         tests:
           - not_null
       - name: location_id
-        description: "The identifier for the location, set to 'NJ_003'."
+        description: "identifier for the location, set to 'NJ_003'."
         tests:
           - not_null
           - accepted_values:
-              values: ['NJ_003']
-          
+              values: ['NJ_003']        
   - name: stg_ticketsales_nj_002_cleaned
-    description: this creates a cleaned table of monthly aggregated ticketsales in location 002 used for the main mart
+    description:  creates a cleaned table of monthly aggregated ticketsales in location 002 used for the main mart
     columns:
       - name: MONTH
         tests:
@@ -105,7 +169,7 @@ models:
         tests:
           - not_null
       - name: location_id
-        description: "The static identifier for the location, set to 'NJ_002'."
+        description: "identifier for the location, set to 'NJ_002'."
         tests:
           - not_null
           - accepted_values:
@@ -114,11 +178,11 @@ models:
     description: "unions sales from all locations and aggregates it by month"
     columns:
       - name: month
-        description: "The first day of the month for which sales are aggregated."
+        description: " first day of the month for which sales are aggregated."
         tests:
           - not_null
       - name: location_id
-        description: "The identifier for the movie theater location "
+        description: " identifier for the theater location "
         tests:
           - not_null
           - accepted_values:
@@ -130,14 +194,14 @@ models:
         tests:
           - not_null
       - name: total_revenue
-        description: "Total revenue from ticket sales by movie, location, and month."
+        description: "total revenue from ticket sales by movie, location, and month."
         tests:
           - not_null
   - name: stg_movie_catalogue_cleaned
-    description: "Staging model for the movie catalogue."
+    description: "staging model for the movie catalogue."
     columns:
       - name: movie_id
-        description: "The unique identifier for each movie. This is primary key."
+        description: "unique identifier for each movie. This is primary key."
         tests:
           - unique
           - not_null
@@ -146,39 +210,36 @@ models:
           - not_null
       - name: release_date
       - name: genre
-        description: "The movie genre. Missing values  filled with 'Unknown'."
+        description: "movie genre. Missing values filled with 'Unknown'."
         tests:
           - not_null
       - name: studio
 
   - name: marts_movie_final
-    description: "Final table that combines monthly sales, costs, and movie details"
+    description: "final table that combines monthly sales, costs, and movie details"
     columns:
       - name: month
         tests:
           - not_null
       - name: location_id
-        description: "The identifier of the movie theater location."
+        description: "identifier of the theater location."
         tests:
           - not_null
       - name: movie_id
-        description: "The unique identifier for the movie."
+        description: "unique identifier for the movie."
         tests:
           - not_null
       - name: movie_title
       - name: genre
       - name: studio
       - name: total_tickets_sold
-        description: "Total number of tickets sold."
+        description: "total number of tickets sold."
         tests:
           - not_null
       - name: total_revenue
         tests:
           - not_null
       - name: rental_cost
-        description: "Total cost of renting the movie for the month"
+        description: "total cost of renting the movie by the month"
         tests:
           - not_null
-
-       
-      
