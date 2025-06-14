@@ -1,4 +1,4 @@
-# Silver Screen Cinema Efficiency Analysis (Snowflake / dbt Project)
+# Silver Screen Efficiency Analysis (Snowflake / dbt Project)
 
 This dbt project implements an ELT pipeline designed to analyze operational and financial data for the Silver Screen cinema chain. The primary objective is to standardize and integrate data from multiple sources, transforming it into a consolidated analytical data mart. This enables a clear assessment of movie profitability across various cinema locations.
 
